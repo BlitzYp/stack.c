@@ -1,83 +1,76 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct Node
 {
     char *value;
     struct Node *next;
-} Node;
+} node;
 
 typedef struct Stack
 {
-    Node top;
-    Node bottom;
-    int length;
-} Stack;
+    node *bottom;
+    node *top;
+    size_t length;
+} stack;
 
-Stack createStack()
+stack createStack()
 {
-    Stack stack = {NULL, NULL, 0};
-    return stack;
+    stack s = {NULL, NULL, 0};
+    return s;
 }
 
-void push(char *value, Stack *stack);
-void peek(Stack *stack);
-void isEmpty(Stack *stack);
-void pop(Stack *stack);
+void push(stack *s, char *value);
+void pop(stack *s);
+char *peek(stack *s);
 
 int main(void)
 {
-    Stack stack = createStack();
-    push("HI", &stack);
-    push("HI2", &stack);
-    push("HI3", &stack);
-    pop(&stack);
-    pop(&stack);
-    peek(&stack);
+  stack s = createStack();
+  push(&s, "HI");
+  push(&s, "HI2");
+  pop(&s);
+  char* res = peek(&s);
+  printf("%s\n", res);
 }
 
-void push(char *value, Stack *stack)
+void push(stack *s, char *value)
 {
-    if (stack->top.value == NULL)
+    node *newNode = malloc(sizeof(node));
+    char *memorySpace = malloc(strlen(value) + 1);
+    memorySpace = value;
+    newNode->value = memorySpace;
+    newNode->next = s->top;
+    if (!s->top)
     {
-        stack->bottom.value = value;
-        stack->bottom.next = NULL;
-        stack->top = (*stack).bottom;
+        s->bottom = newNode;
+        s->top = s->bottom;
         return;
     }
-    Node newNode;
-    newNode.value = value;
-    Node currentTop = {stack->top.value, stack->top.next};
-    newNode.next = &currentTop;
-    stack->top = newNode;
-    stack->length++;
+    s->top = newNode;
+    s->length ++;
     return;
 }
 
-void peek(Stack *stack)
+void pop(stack *s) 
 {
-    if (stack->length >= 0)
-    {
-        printf("%s\n", stack->top.value);
+    if (s->length >= 0) {
+        node* hasToGo = s->top;
+        free(s->top->value);
+        s->top = s->top->next;
+        free(hasToGo);
+        s->length--;
         return;
     }
-    printf("NULL\n");
+    return;
 }
 
-void pop(Stack *stack)
+char *peek(stack *s)
 {
-    if (stack->length > 0)
+    if (s->top)
     {
-        stack->length--;
-        stack->top = *stack->top.next;
-        return;
+        return s->top->value;
     }
-    else
-    {
-        stack->bottom.value = NULL;
-        stack->bottom.next = NULL;
-        stack->top.next = NULL;
-        stack->top.value = NULL;
-        return;
-    }
-    printf("NULL\n");
+    return (char *)-1;
 }
