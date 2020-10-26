@@ -5,7 +5,7 @@
 typedef struct Node
 {
     char *value;
-    struct node *next;
+    struct Node *next;
 } node_t;
 
 typedef struct Stack
@@ -21,57 +21,55 @@ stack_t createStack()
     return s;
 }
 
-void push(stack_t *s, char *value);
-void pop(stack_t *s);
-char *peek(stack_t *s);
+void push(stack_t *stack, char *value);
+void pop(stack_t *stack);
+char *peek(stack_t *stack);
 
 int main(void)
 {
     stack_t s = createStack();
     push(&s, "HI");
     push(&s, "HI2");
+    push(&s, "HI3");
     pop(&s);
     char *res = peek(&s);
     printf("%s\n", res);
 }
 
-void push(stack_t *s, char *value)
+void push(stack_t *stack, char *value)
 {
     node_t *newNode = malloc(sizeof(node_t));
-    char *memorySpace = malloc(strlen(value) + 1);
-    memorySpace = value;
-    newNode->value = memorySpace;
-    newNode->next = s->top;
-    if (!s->top)
+    newNode->value = malloc(strlen(value) + 1);
+    strcpy(newNode->value, value);
+    if (!stack->bottom)
     {
-        s->bottom = newNode;
-        s->top = s->bottom;
+        stack->bottom = newNode;
+        stack->top = stack->bottom;
         return;
     }
-    s->top = newNode;
-    s->length++;
+    newNode->next = stack->top;
+    stack->top = newNode;
+    stack->length++;
     return;
 }
 
-void pop(stack_t *s)
+void pop(stack_t *stack)
 {
-    if (s->length >= 0)
+    if (!stack->length)
     {
-        node_t *hasToGo = s->top;
-        free(s->top->value);
-        s->top = s->top->next;
-        free(hasToGo);
-        s->length--;
+        free(stack->bottom->value);
+        free(stack->bottom);
         return;
     }
+    free(stack->top->value);
+    node_t *hasToGo = stack->top;
+    stack->top = stack->top->next;
+    free(hasToGo);
+    stack->length--;
     return;
 }
 
-char *peek(stack_t *s)
+char *peek(stack_t *stack)
 {
-    if (s->top)
-    {
-        return s->top->value;
-    }
-    return (char *)-1;
+    return stack->length >= 0 ? stack->top->value : (char *)-1;
 }
