@@ -15,25 +15,36 @@ typedef struct Stack
     size_t length;
 } stack_t;
 
-stack_t createStack()
+stack_t* createStack()
 {
-    stack_t s = {NULL, NULL, 0};
+    stack_t* s = malloc(sizeof(stack_t));
     return s;
 }
 
-void push(stack_t *stack, char *value);
-void pop(stack_t *stack);
-char *peek(stack_t *stack);
+void push(stack_t*, char*);
+void pop(stack_t*);
+char *peek(stack_t*);
+void destroyStack(stack_t*);
 
 int main(void)
 {
-    stack_t s = createStack();
-    push(&s, "HI");
-    push(&s, "HI2");
-    push(&s, "HI3");
-    pop(&s);
-    char *res = peek(&s);
+    stack_t* s = createStack();
+    push(s, "HI");
+    push(s, "HI2");
+    push(s, "HI3");
+    pop(s);
+    char *res = peek(s);
     printf("%s\n", res);
+    destroyStack(s);
+}
+
+void destroyStack(stack_t* stack) 
+{
+    if (stack->bottom || stack->bottom->value) { free(stack->bottom->value); free(stack->bottom); }
+    free(stack->top->value);
+    free(stack->top);
+    free(stack);
+    return;
 }
 
 void push(stack_t *stack, char *value)
