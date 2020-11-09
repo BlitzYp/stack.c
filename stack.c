@@ -39,16 +39,12 @@ int main(void)
 
 void destroyStack(stack_t *stack)
 {
-    node_t *currentTop = stack->top;
-    for (; currentTop->next;)
+    for (node_t* current = stack->top, *next = NULL; current; current = next)
     {
-        node_t *toGo = currentTop;
-        free(currentTop->value);
-        currentTop = currentTop->next;
-        free(toGo);
+        next = current->next;
+        free(current->value);
+        free(current);
     }
-    free(currentTop->value);
-    free(currentTop);
     free(stack);
     return;
 }
